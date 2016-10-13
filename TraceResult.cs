@@ -11,7 +11,7 @@ namespace Tracer
     {
         private long startTime;
         private long finishTime;
-        private Dictionary<int, ProgramThread> threads; 
+        private Dictionary<int, ProgramThread> threads;
 
         public TraceResult()
         {
@@ -20,50 +20,72 @@ namespace Tracer
 
         private long getCurrentTime()
         {
-            return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            return DateTime.Now.Millisecond;
         }
 
-        public void addThread()
+        public int createThread()
         {
             ProgramThread thread = new ProgramThread();
-            if (!isAdded(thread.getCurrentThreadID())) 
+            if (!containsThread(thread.getCurrentThreadID()))
             {
                 threads.Add(thread.getCurrentThreadID(), thread);
             }
+            return thread.getCurrentThreadID();
         }
         public void setStartTime()
         {
-            this.startTime = getCurrentTime() ;
+            this.startTime = getCurrentTime();
         }
         public void setFinishTime()
         {
             this.finishTime = getCurrentTime();
         }
 
+        public bool isStarted()
+        {
+            if (this.startTime != 0) return true;
+            return false;
+        }
+        public bool isFinished()
+        {
+            if (this.finishTime != 0) return true;
+            return false;
+        }
         public long getTime()
         {
             setFinishTime();
-            if ((this.startTime != 0) && (this.finishTime != 0))
+            if ((!isStarted()) && (!isFinished()))
             {
-                return (this.finishTime - this.startTime); 
-            } else
+                return (this.finishTime - this.startTime);
+            }
+            else
             {
                 return 0;
-            }    
+            }
         }
-        public bool isAdded(int threadID)
-        {
-            return threads.ContainsKey(threadID);
-        }
+
         public ProgramThread getThread(int threadID)
         {
             ProgramThread targetThread = null;
-            if (isAdded(threadID))
+            if (containsThread(threadID))
             {
-                targetThread = threads[threadID]; 
+                targetThread = threads[threadID];
             }
 
             return targetThread;
+        }
+        public bool containsThread(int threadID)
+        {
+            return threads.ContainsKey(threadID);
+        }
+        public ArrayList getThreads()
+        {
+            ArrayList list = new ArrayList(threads.Count);
+            foreach (ProgramThread thread in threads.Values)
+            {
+                list.Add(thread);
+            }
+            return list;
         }
     }
 }

@@ -6,9 +6,6 @@ namespace Tracer
 {
     class ProgramThread
     {
-        private String START_TRACE = "void startTrace()";
-        private String STOP_TRACE = "void stopTrace()";
-
         private int currentThreadID;
         public LinkedList<Method> methods;
 
@@ -41,54 +38,31 @@ namespace Tracer
         {
             return this.time; 
         }
-        
-        public Method getMainMethod()
-        { 
-            LinkedList<Method> temp = new LinkedList<Method>();
-            int embeddedLevel = 0;
-            int preEmbeddedLevel = 0;
 
-            foreach (Method method in methods)
-            {
-                if (isStart(method))
-                {
-                    embeddedLevel++;
-                    break;
-                }
-                if (isStop(method))
-                {
-                    embeddedLevel--;
-                    break;
-                }
-
-                temp.AddLast(method);
-
-                if (embeddedLevel > 0)
-                {
-                    if (preEmbeddedLevel == embeddedLevel)
-                    {
-                        if (temp.Count >= 2)
-                        {
-                            Method lastMethod;
-                            lastMethod = temp.Last.Value;
-                            temp.RemoveLast();
-                            temp.AddLast(lastMethod);
-                            temp.Last.Previous.Value.addIncludedMethod(temp.Last.Value);
-                        }
-                    } else
-                    {
-                        temp.Last.Previous.Value.addIncludedMethod(temp.Last.Value);
-                    }
-                }
-                preEmbeddedLevel = embeddedLevel;
-            }
-
-            Method mainMethod = temp.First.Value;
-            temp = null;
-            methods = null;
-
-            return mainMethod;
+        public Method getLastMethod()
+        {
+            if (methods.Count != 0) { return methods.Last.Value; }
+            return null;
         }
+        public void removeLastMethod()
+        {
+            methods.RemoveLast();
+        }
+        public LinkedList<Method> getMethods()
+        {
+            return methods;
+        }
+
+        public bool containsMethod(Method method)
+        {
+            return methods.Contains(method);
+        }
+        public bool isClear()
+        {
+            if (methods.Count > 0) { return false; }
+            return true;
+        }
+        /*
         private bool isStart(Method method)
         {
             if (method.getMethodName().Equals(START_TRACE)) return true;
@@ -99,5 +73,6 @@ namespace Tracer
             if (method.getMethodName().Equals(STOP_TRACE)) return true;
             return false;
         }
+        */
     }
 }
