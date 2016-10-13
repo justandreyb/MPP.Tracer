@@ -10,20 +10,9 @@ using System.Xml.Linq;
 
 namespace Tracer
 {
-
-    /*
-     * Проверка на существование потока + проверка на системный вызов:
-           Если существует -> проверка linkedlist на наличие методов, 
-                если есть - добавление текущего и в лист и в метод, 
-                если нет - только в лист 
-           если не существует - создание потока и добавление в лист текущего метода
-        
-       Если встречен stopTrace - выкинуть последний метод из листа текущего потока + подсчет времени метода
-    */
     class Tracer : ITracer
     {
         TraceResult traceResult = new TraceResult();
-        //how to get current called method ? (start , stop or another)
         public void startTrace()
         {
             lock (new Object())
@@ -31,7 +20,7 @@ namespace Tracer
                 StackTrace stackTrace = new StackTrace();
                 StackFrame stackFrame = stackTrace.GetFrame(1);
 
-                int currentThreadID = Thread.CurrentThread.ManagedThreadId; // it's real ID or only for Tracer.cs ?
+                int currentThreadID = Thread.CurrentThread.ManagedThreadId;
 
                 Method method = createMethod(stackFrame, currentThreadID);
 
@@ -61,7 +50,7 @@ namespace Tracer
         {
             lock (new Object())
             {
-                int currentThreadID = Thread.CurrentThread.ManagedThreadId; // or from currentMethod.getThreadID(); 
+                int currentThreadID = Thread.CurrentThread.ManagedThreadId;
                 ProgramThread currentThread = traceResult.getThread(currentThreadID);
                 if (currentThread.getLastMethod() != null)
                 {
@@ -72,8 +61,6 @@ namespace Tracer
                     }
                 }
             }
-
-            //Console.ReadLine();
         }
 
         private Method createMethod(StackFrame stackFrame, int threadID)
@@ -91,8 +78,6 @@ namespace Tracer
         public void getTraceResult()
         {
             if (!traceResult.isFinished()) { traceResult.setFinishTime(); }
-
-            //XMLCreator(traceResult);
             XDocument doc = new XDocument();
             XElement root = new XElement("root");
             doc.Add(root);
@@ -105,14 +90,6 @@ namespace Tracer
                 }
 
             }
-            //doc.Root.Add(
-              //      new XElement("thread",
-               //         new XAttribute("id", thread.getCurrentThreadID()),
-                //        new XAttribute("time", thread.getTime() + "ms"),
-                //        MethodsToXML(thread.getMethods())
-                  //  )
-         //       );
-            //doc.Root.Add(root);
             doc.Save("TraceResult.xml");
         }
 
@@ -131,38 +108,6 @@ namespace Tracer
             }
             return element;
             
-        }
-
-
-        private XElement MethodsToXML(LinkedList<Method> methods)
-        {
-            XElement element = null;
-            Console.WriteLine("I'm here (1)");
-            foreach (Method method in methods)
-            {
-                try
-                {
-                    XAttribute name = new XAttribute("name", method.getMethodName());
-                    Console.WriteLine("I'm here (1.2)");
-                    XAttribute time = new XAttribute("time", method.getTime());
-                    Console.WriteLine("I'm here (1.3)");
-                    XAttribute paramsNumber = new XAttribute("params", method.getParametersNumber());
-
-                    element = new XElement("method", name, time, paramsNumber);
-                    Console.WriteLine("I'm here (2)");
-
-                    element.Add(MethodsToXML(method.getIncludedMethods()));
-
-                   
-                }
-                catch
-                {
-                    Console.WriteLine("Null");
-                }
-            }
-            Console.WriteLine("I'm here (3)");
-            Console.Read();
-            return element;
         }
     }
 }

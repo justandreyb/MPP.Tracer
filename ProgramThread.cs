@@ -62,17 +62,5 @@ namespace Tracer
             if (methods.Count > 0) { return false; }
             return true;
         }
-        /*
-        private bool isStart(Method method)
-        {
-            if (method.getMethodName().Equals(START_TRACE)) return true;
-            return false;
-        }
-        private bool isStop(Method method)
-        {
-            if (method.getMethodName().Equals(STOP_TRACE)) return true;
-            return false;
-        }
-        */
     }
 }

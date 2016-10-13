@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Tracer
 {
-    //FIXME : удаление метода из LinkedList (остается в XML)
     class Method
     {
         private String methodName;
